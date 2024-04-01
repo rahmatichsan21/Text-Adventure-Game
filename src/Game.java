@@ -28,7 +28,7 @@ public class Game {
 	TitleScreenHandler tsHandler = new TitleScreenHandler();
 	ChoiceHandler cHandler = new ChoiceHandler();
 	
-	int playerHP;
+	int playerHP, monsterHP;
 	String weapon, position;
 	
 	public static void main(String[] args) {
@@ -173,6 +173,7 @@ public class Game {
 	
 	public void playerSetUp() {
 		playerHP = 20;
+		monsterHP = 25;
 		weapon = "Knife";
 		weaponLabelName.setText(weapon);
 		hpLabelNumber.setText(""+ playerHP);
@@ -251,13 +252,58 @@ public class Game {
 	
 	public void west() {
 		position = "west";
-		mainTextArea.setText("You are at a crossroad.\nIf you go south you'll go back to the town gate");
-		choice1.setText("Go South");
-		choice2.setText("Go North");
-		choice3.setText("Go East");
-		choice4.setText("Go West");
+		mainTextArea.setText("You encounter a deadly Monster!\nWhat will you do?");
+		choice1.setText("Fight");
+		choice2.setText("Run");
+		choice3.setText("");
+		choice4.setText("");
 	}
 	
+	public void fight() {
+		position = "fight";
+		mainTextArea.setText("Monster HP :" + monsterHP +"\nWhat will you do?");
+		choice1.setText("Fight");
+		choice2.setText("Run");
+		choice3.setText("");
+		choice4.setText("");
+	}
+	
+	public void playerAttack() {
+		position = "playerAttack";
+		
+		int playerDamage = 0;
+		
+		if(weapon.equals("Knife")) {
+			playerDamage = new java.util.Random().nextInt(3);
+		}
+		else {
+			playerDamage = new java.util.Random().nextInt(7);
+		}
+		
+		mainTextArea.setText("You attacked the monster and did " + playerDamage +" Damage");
+		monsterHP = monsterHP - playerDamage;
+		choice1.setText(">");
+		choice2.setText("");
+		choice3.setText("");
+		choice4.setText("");
+	}
+	
+	public void monsterAttack() {
+		position = "monsterAttack";
+		
+		int monsterDamage = 0;
+		
+		monsterDamage = new java.util.Random().nextInt(4);
+		
+		
+		mainTextArea.setText("The monster attacked you and did " + monsterDamage +" Damage");
+		playerHP = playerHP - monsterDamage;
+		hpLabelNumber.setText("" + playerHP);
+		choice1.setText(">");
+		choice2.setText("");
+		choice3.setText("");
+		choice4.setText("");
+	}
 	public class TitleScreenHandler implements ActionListener{
 		public void actionPerformed(ActionEvent event) {
 			createGameScreen();
@@ -280,21 +326,25 @@ public class Game {
 				switch(yourChoice) {
 				case "C1" : townGate(); break;
 				}
+				break;
 			case "attackGuard":
 				switch(yourChoice) {
 				case "C1": townGate(); break;
 				}
+				break;
 			case "crossRoad":
 				switch(yourChoice) {
 				case "C1": townGate(); break;
 				case "C2": north(); break;
 				case "C3": east(); break;
-				case "C4": 
+				case "C4": west(); break;
 				}
+				break;
 			case "north":
 				switch (yourChoice) {
 				case "C1": crossRoad(); break;
 				}
+				break;
 			case "east":
 				switch(yourChoice){
 				case "C1": pickupSword(); break;
@@ -304,6 +354,29 @@ public class Game {
 				switch(yourChoice) {
 				case "C1" : east(); break;
 				}
+				break;
+			case "west":
+				switch(yourChoice) {
+				case "C1" : fight();  break;
+				case "C2": crossRoad(); break;
+				}
+				break;
+			case "fight":
+				switch(yourChoice) {
+				case "C1": playerAttack(); break;
+				case "C2": crossRoad(); break;
+				}
+				break;
+			case "playerAttack":
+				switch(yourChoice) {
+				case "C1": monsterAttack(); break;
+				}
+				break;
+			case "monsterAttack":
+				switch(yourChoice) {
+				case "C1": fight(); break;
+				}
+				break;
 			}
 		}
 		
