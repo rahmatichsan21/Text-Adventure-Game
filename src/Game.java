@@ -28,6 +28,7 @@ public class Game {
 	TitleScreenHandler tsHandler = new TitleScreenHandler();
 	ChoiceHandler cHandler = new ChoiceHandler();
 	
+	boolean goldenRing = false;
 	int playerHP, monsterHP;
 	String weapon, position;
 	
@@ -192,11 +193,20 @@ public class Game {
 	
 	public void talkGuard() {
 		position = "talkGuard";
+		if(goldenRing == true) {
+			mainTextArea.setText("What?! you hvae the golden Ring?\nYou killed that monster?\nYou're a hero please enter our town!\n\n<THE END>");
+			choice1.setVisible(false);
+			choice2.setVisible(false);
+			choice3.setVisible(false);
+			choice4.setVisible(false);
+		}
+		else {
 		mainTextArea.setText("You are not from this town aren't you\nYou shall not enter!");
 		choice1.setText("Return");
 		choice2.setText("");
 		choice3.setText("");
 		choice4.setText("");
+		}
 	}
 	
 	public void attackGuard() {
@@ -204,6 +214,10 @@ public class Game {
 		mainTextArea.setText("Arhg....\nYou ... FOOL\nTake This!!\nThe Guard hit you\n(you took 3 Damage)");
 		playerHP = playerHP -3;
 		hpLabelNumber.setText(""+playerHP);
+		if (playerHP <= 0) {
+	        deathScreen();
+	        return;
+	    }
 		choice1.setText("Return");
 		choice2.setText("");
 		choice3.setText("");
@@ -243,6 +257,7 @@ public class Game {
 	public void pickupSword() {
 		position = "pickupSword";
 		mainTextArea.setText("You picked up a Great Sword of the Angels");
+		weapon = "Great Sword";
 		weaponLabelName.setText("Great Sword");
 		choice1.setText("return");
 		choice2.setText("");
@@ -252,7 +267,7 @@ public class Game {
 	
 	public void west() {
 		position = "west";
-		mainTextArea.setText("You encounter a deadly Monster!\nWhat will you do?");
+		mainTextArea.setText("You encounter a golden goblin!\nWhat will you do?");
 		choice1.setText("Fight");
 		choice2.setText("Run");
 		choice3.setText("");
@@ -273,12 +288,11 @@ public class Game {
 		
 		int playerDamage = 0;
 		
-		if(weapon.equals("Knife")) {
-			playerDamage = new java.util.Random().nextInt(3);
-		}
-		else {
-			playerDamage = new java.util.Random().nextInt(7);
-		}
+		 if (weapon.equals("Knife")) {
+		        playerDamage = new java.util.Random().nextInt(3);
+		    } else if (weapon.equals("Great Sword")) {
+		        playerDamage = new java.util.Random().nextInt(4) + 4;
+		    }
 		
 		mainTextArea.setText("You attacked the monster and did " + playerDamage +" Damage");
 		monsterHP = monsterHP - playerDamage;
@@ -299,21 +313,50 @@ public class Game {
 		mainTextArea.setText("The monster attacked you and did " + monsterDamage +" Damage");
 		playerHP = playerHP - monsterDamage;
 		hpLabelNumber.setText("" + playerHP);
+		if (playerHP <= 0) {
+	        deathScreen();
+	        return;
+	    }
 		choice1.setText(">");
 		choice2.setText("");
 		choice3.setText("");
 		choice4.setText("");
 	}
+	
+	public void defeatMonster() {
+		position = "defeatMonster";
+		mainTextArea.setText("You have defeated the monster...\nYou obtained a golden ring");
+		goldenRing = true;
+	    choice1.setText("return"); 
+	    choice2.setText(""); 
+	    choice3.setText("");
+	    choice4.setText("");
+	}
+	
+	public void deathScreen() {
+	    mainTextArea.setText("You have died\n\n<GAME OVER>");
+	    choice1.setText(""); 
+	    choice1.setActionCommand(""); 
+	    choice2.setText(""); 
+	    choice3.setText("");
+	    choice4.setText("");
+	    choice1.setVisible(false);
+	    choice2.setVisible(false);
+	    choice3.setVisible(false);
+	    choice4.setVisible(false);
+	}
+
+	
 	public class TitleScreenHandler implements ActionListener{
 		public void actionPerformed(ActionEvent event) {
 			createGameScreen();
+			
 		}
 	}
 	
 	public class ChoiceHandler implements ActionListener{
 		public void actionPerformed(ActionEvent event) {
 			String yourChoice = event.getActionCommand();
-			
 			switch(position) {
 			case "townGate":
 				switch(yourChoice) {
@@ -369,7 +412,7 @@ public class Game {
 				break;
 			case "playerAttack":
 				switch(yourChoice) {
-				case "C1": monsterAttack(); break;
+				case "C1": if(monsterHP <=0) {defeatMonster();} else{monsterAttack();} break;
 				}
 				break;
 			case "monsterAttack":
@@ -377,6 +420,12 @@ public class Game {
 				case "C1": fight(); break;
 				}
 				break;
+			case "defeatMonster":{
+				switch(yourChoice) {
+				case "C1": crossRoad(); break;
+				}
+				break;
+			}
 			}
 		}
 		
